@@ -49,21 +49,6 @@ export default async function VenueDetailPage({ params }: VenueDetailPageProps) 
           <p className="text-xl font-medium">${venue.deposit_amount}</p>
         </div>
       </div>
-      <div className="flex flex-col gap-3">
-        <h2 className="text-xl font-medium">Disponibilidad</h2>
-        {availability.booked_dates.length === 0 && (
-          <p className="text-zinc-600">Sin fechas ocupadas en el próximo año.</p>
-        )}
-        {availability.booked_dates.length > 0 && (
-          <ul className="flex flex-wrap gap-2">
-            {availability.booked_dates.map((bookedDate) => (
-              <li key={bookedDate} className="rounded bg-red-50 px-3 py-1 text-sm text-red-700">
-                {bookedDate}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
       <BookingForm venueId={venue.id} isAuthenticated={user !== null} bookedDates={availability.booked_dates} />
     </section>
   );
