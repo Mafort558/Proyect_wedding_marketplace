@@ -47,6 +47,27 @@ export interface Booking {
   created_at: string;
 }
 
+export interface Provider {
+  id: number;
+  user_id: number;
+  business_name: string;
+  category: ProviderCategory;
+  description: string;
+  phone: string;
+  created_at: string;
+}
+
+export interface Service {
+  id: number;
+  provider_id: number;
+  name: string;
+  category: ProviderCategory;
+  description: string;
+  price: string;
+  photos: string[];
+  created_at: string;
+}
+
 export interface CheckoutResponse {
   payment_id: number;
   booking_id: number;

@@ -165,6 +165,14 @@ npm run dev
 - Decisión (KISS): todo el data fetching es server-side (Server Components + Actions); no hay fetch desde el cliente ni estado global. Disponibilidad como lista de fechas ocupadas; calendario visual queda para después.
 - Verificado: `npm run build` y lint verdes; smoke e2e con backend real (catálogo SSR muestra venue seedeado, detalle con seña/disponibilidad, vistas autenticadas via cookie, `/bookings` sin sesión → 307 a `/login`).
 
+### 2026-06-12 — Frontend: panel de proveedor
+- **Backend**: endpoints nuevos `GET /api/providers/me/venues` y `GET /api/providers/me/services` (listar solo lo propio; el catálogo público no filtra por proveedor). +2 tests (39 total).
+- **Registro con rol**: selector cliente/proveedor en `/register`; si es proveedor pide nombre del negocio y rubro (mismos campos que exige el backend).
+- **Panel** (`/panel`, solo proveedores): perfil + reservas recibidas con confirmar/rechazar. Subpáginas `/panel/venues` y `/panel/services`: listado propio con crear/editar/eliminar (forms compartidos para alta y edición, error inline en eliminar — ej. 409 con reservas).
+- Guard DRY: `fetchAsProvider` (`src/lib/provider.ts`) — sin token → `/login`, sin rol/perfil provider (403) → `/venues`. Labels compartidos en `src/lib/labels.ts` (estados y rubros).
+- Link "Panel" en el nav solo para usuarios provider.
+- Verificado: build + lint verdes; smoke con backend real y seed (panel 200 como proveedor, 307 a /login sin sesión, 307 a /venues como cliente, edición inexistente 404).
+
 ### 2026-06-12 — Infra: monorepo git + DB local + seed
 - **Git monorepo**: se eliminó `frontend/.git` (solo tenía el commit auto-generado de create-next-app) y se inicializó git en la raíz, branch `main`. Se limpió un scaffold duplicado de create-next-app que había quedado en la raíz (src/, public/, configs default sin tocar). Remote: repo privado en GitHub (`Proyect_wedding_marketplace`). Flujo acordado: primer push a `main`; de acá en adelante todo cambio sale de ramas.
 - **DB local**: base `wedding_marketplace` creada y migración `001_initial_schema.sql` aplicada. `backend/.env` configurado (JWT secret aleatorio).

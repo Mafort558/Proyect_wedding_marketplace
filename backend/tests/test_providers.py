@@ -47,6 +47,27 @@ async def test_delete_venue_without_bookings(client):
     assert response.status_code == 204
 
 
+async def test_list_my_venues_only_own(client):
+    owner = await provider_token(client, "owner@test.com")
+    other = await provider_token(client, "other@test.com")
+    own_venue_id = await create_venue(client, owner)
+    await create_venue(client, other)
+    response = await client.get("/api/providers/me/venues", headers=auth(owner))
+    assert response.status_code == 200
+    assert [venue["id"] for venue in response.json()] == [own_venue_id]
+
+
+async def test_list_my_services_only_own(client):
+    owner = await provider_token(client, "owner@test.com")
+    other = await provider_token(client, "other@test.com")
+    created = await client.post("/api/services", json=SERVICE_PAYLOAD, headers=auth(owner))
+    assert created.status_code == 201
+    await client.post("/api/services", json=SERVICE_PAYLOAD, headers=auth(other))
+    response = await client.get("/api/providers/me/services", headers=auth(owner))
+    assert response.status_code == 200
+    assert [service["id"] for service in response.json()] == [created.json()["id"]]
+
+
 async def test_service_crud_with_ownership(client):
     owner = await provider_token(client, "owner@test.com")
     intruder = await provider_token(client, "intruder@test.com")

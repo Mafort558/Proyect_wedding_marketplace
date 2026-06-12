@@ -12,6 +12,10 @@ class ServiceRepository:
         result = await self._session.execute(select(Service).where(Service.id == service_id))
         return result.scalar_one_or_none()
 
+    async def list_by_provider(self, provider_id: int) -> list[Service]:
+        result = await self._session.execute(select(Service).where(Service.provider_id == provider_id).order_by(Service.id))
+        return list(result.scalars().all())
+
     async def list_services(self, category: str | None, limit: int, offset: int) -> tuple[list[Service], int]:
         query = select(Service)
         if category is not None:

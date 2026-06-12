@@ -25,7 +25,7 @@
 - [x] Flujo de registro/login (cookie httpOnly, server actions) — solo rol client por ahora
 - [x] Mis reservas: listado + crear desde detalle + cancelar
 - [x] Checkout de reserva con seña (MP) — botón pagar seña → init_point + páginas /checkout/success|pending|failure (falta probar con credenciales MP reales)
-- [ ] Panel de proveedor (UI) — incluye registro con rol provider
+- [x] Panel de proveedor (UI) — registro con rol provider, `/panel` (reservas recibidas confirmar/rechazar), CRUD salones y servicios
 - [ ] Calendario visual de disponibilidad (hoy: lista de fechas ocupadas)
 
 ## Más adelante (post-MVP)

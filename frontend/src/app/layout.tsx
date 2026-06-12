@@ -36,6 +36,11 @@ export default async function RootLayout({
               </Link>
               {user !== null && (
                 <>
+                  {user.role === "provider" && (
+                    <Link href="/panel" className="hover:underline">
+                      Panel
+                    </Link>
+                  )}
                   <Link href="/bookings" className="hover:underline">
                     Mis reservas
                   </Link>

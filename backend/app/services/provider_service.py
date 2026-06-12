@@ -8,6 +8,8 @@ from app.repositories.service_repository import ServiceRepository
 from app.repositories.venue_repository import VenueRepository
 from app.schemas.booking import BookingResponse
 from app.schemas.provider import ProviderResponse
+from app.schemas.service import ServiceResponse
+from app.schemas.venue import VenueResponse
 
 
 class ProviderService:
@@ -23,6 +25,14 @@ class ProviderService:
 
     def get_profile(self, provider: Provider) -> ProviderResponse:
         return ProviderResponse.model_validate(provider)
+
+    async def list_my_venues(self, provider: Provider) -> list[VenueResponse]:
+        venues = await self._venue_repository.list_by_provider(provider.id)
+        return [VenueResponse.model_validate(venue) for venue in venues]
+
+    async def list_my_services(self, provider: Provider) -> list[ServiceResponse]:
+        services = await self._service_repository.list_by_provider(provider.id)
+        return [ServiceResponse.model_validate(service) for service in services]
 
     async def list_received_bookings(self, provider: Provider) -> list[BookingResponse]:
         bookings = await self._booking_repository.list_by_provider(provider.id)

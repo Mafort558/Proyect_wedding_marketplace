@@ -19,6 +19,10 @@ class VenueRepository:
         result = await self._session.execute(query.order_by(Venue.id).limit(limit).offset(offset))
         return list(result.scalars().all()), total
 
+    async def list_by_provider(self, provider_id: int) -> list[Venue]:
+        result = await self._session.execute(select(Venue).where(Venue.provider_id == provider_id).order_by(Venue.id))
+        return list(result.scalars().all())
+
     async def get_by_id(self, venue_id: int) -> Venue | None:
         result = await self._session.execute(select(Venue).where(Venue.id == venue_id))
         return result.scalar_one_or_none()

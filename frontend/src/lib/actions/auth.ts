@@ -24,18 +24,29 @@ export async function loginAction(_prevState: ActionState, formData: FormData): 
 }
 
 export async function registerAction(_prevState: ActionState, formData: FormData): Promise<ActionState> {
-  const payload = {
-    email: String(formData.get("email") ?? ""),
-    password: String(formData.get("password") ?? ""),
-    full_name: String(formData.get("full_name") ?? ""),
-    role: "client",
-  };
   try {
-    await apiFetch<User>("/api/auth/register", { method: "POST", body: payload });
+    await apiFetch<User>("/api/auth/register", { method: "POST", body: buildRegisterPayload(formData) });
   } catch (error) {
     return { error: toErrorMessage(error) };
   }
   return loginAction(_prevState, formData);
+}
+
+function buildRegisterPayload(formData: FormData): Record<string, string> {
+  const payload = {
+    email: String(formData.get("email") ?? ""),
+    password: String(formData.get("password") ?? ""),
+    full_name: String(formData.get("full_name") ?? ""),
+    role: String(formData.get("role") ?? "client"),
+  };
+  if (payload.role !== "provider") {
+    return payload;
+  }
+  return {
+    ...payload,
+    business_name: String(formData.get("business_name") ?? ""),
+    category: String(formData.get("category") ?? ""),
+  };
 }
 
 export async function logoutAction(): Promise<void> {

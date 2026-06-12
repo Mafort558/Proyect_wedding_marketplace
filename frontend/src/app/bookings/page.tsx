@@ -4,15 +4,9 @@ import { redirect } from "next/navigation";
 import { PayDepositButton } from "@/app/bookings/pay-deposit-button";
 import { apiFetch } from "@/lib/api";
 import { cancelBookingAction } from "@/lib/actions/bookings";
+import { STATUS_LABELS } from "@/lib/labels";
 import { getSessionToken } from "@/lib/session";
 import type { Booking, BookingStatus } from "@/lib/types";
-
-const STATUS_LABELS: Record<BookingStatus, string> = {
-  pending: "Pendiente de seña",
-  deposit_paid: "Seña pagada",
-  confirmed: "Confirmada",
-  cancelled: "Cancelada",
-};
 
 const CANCELLABLE_STATUSES: BookingStatus[] = ["pending", "deposit_paid"];
 
