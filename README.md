@@ -191,3 +191,8 @@ npm run dev
 - Botón "Pagar seña" en `/bookings` (solo reservas `pending`): Server Action `payDepositAction` llama `POST /api/payments/checkout` con el token de la cookie y redirige al `init_point` de Mercado Pago. Errores del backend (503 sin credenciales, 409 estado inválido) se muestran inline bajo el botón (`useActionState`).
 - Páginas de retorno `/checkout/success|pending|failure` (matchean las `back_urls` que arma el backend): ruta dinámica única `/checkout/[result]` con dict de contenidos, 404 para valores desconocidos.
 - Verificado: build + lint verdes; smoke con backend real (reserva pending muestra botón Pagar seña + Cancelar, páginas de retorno 200, valor inválido 404). Pendiente: prueba end-to-end con credenciales reales de MP (sandbox).
+
+### 2026-06-12 — Frontend: calendario visual de disponibilidad
+- Nuevo componente cliente `AvailabilityCalendar` (detalle del salón): grilla mensual con navegación de meses (no permite ir antes del mes actual), fechas ocupadas en rojo, pasadas deshabilitadas, leyenda de colores.
+- Integrado en `BookingForm`: reemplaza el `<input type="date">` y la lista plana de fechas ocupadas — se elige la fecha clickeando el día (input hidden + botón deshabilitado hasta seleccionar). Sin sesión se muestra el calendario en modo solo lectura con link a login.
+- Verificado: typecheck + lint verdes.
