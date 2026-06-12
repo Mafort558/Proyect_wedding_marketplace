@@ -13,10 +13,10 @@
 - [x] Tests de pagos (checkout solo dueño/pending, webhook idempotente, fee)
 
 ### 2. Infra / housekeeping
-- [ ] **Decisión git pendiente**: borrar `frontend/.git` (solo tiene commit auto-generado) e inicializar git en la raíz del monorepo
-- [ ] Crear DB Postgres local `wedding_marketplace` + correr `migrations/001_initial_schema.sql`
+- [x] Git monorepo: `frontend/.git` borrado, repo en raíz, pusheado a `github.com/Mafort558/Proyect_wedding_marketplace` (privado, SSH alias `github-mafort558`). Flujo acordado: primer push a `main`, de ahora en más trabajo en ramas
+- [x] DB Postgres local `wedding_marketplace` creada + migración aplicada
 - [x] Probar la API end-to-end con DB real (registro → login → crear venue → reservar) — hecho vía smoke del frontend contra `wedding_marketplace_test`
-- [ ] Datos de prueba (seed): proveedores, salones, servicios
+- [x] Datos de prueba (seed): `backend/seed.py` idempotente (4 users pass `Password123!`, 3 providers, 3 venues, 3 services)
 - [ ] Probar checkout MP end-to-end con credenciales sandbox
 
 ## Frontend (en curso — 2026-06-12)

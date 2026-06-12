@@ -165,6 +165,12 @@ npm run dev
 - Decisión (KISS): todo el data fetching es server-side (Server Components + Actions); no hay fetch desde el cliente ni estado global. Disponibilidad como lista de fechas ocupadas; calendario visual queda para después.
 - Verificado: `npm run build` y lint verdes; smoke e2e con backend real (catálogo SSR muestra venue seedeado, detalle con seña/disponibilidad, vistas autenticadas via cookie, `/bookings` sin sesión → 307 a `/login`).
 
+### 2026-06-12 — Infra: monorepo git + DB local + seed
+- **Git monorepo**: se eliminó `frontend/.git` (solo tenía el commit auto-generado de create-next-app) y se inicializó git en la raíz, branch `main`. Se limpió un scaffold duplicado de create-next-app que había quedado en la raíz (src/, public/, configs default sin tocar). Remote: repo privado en GitHub (`Proyect_wedding_marketplace`). Flujo acordado: primer push a `main`; de acá en adelante todo cambio sale de ramas.
+- **DB local**: base `wedding_marketplace` creada y migración `001_initial_schema.sql` aplicada. `backend/.env` configurado (JWT secret aleatorio).
+- **Seed**: `backend/seed.py` (idempotente: si hay usuarios no hace nada). Crea 1 cliente + 3 proveedores (salones, catering, música), 3 salones y 3 servicios. Password de todos configurable vía `SEED_PASSWORD` (default `Password123!`). Correr: `cd backend && .venv/bin/python seed.py`.
+- Verificado: API levantada contra la DB local responde catálogo seedeado y login de usuario seed OK.
+
 ### 2026-06-12 — Frontend: checkout de seña (MP)
 - Botón "Pagar seña" en `/bookings` (solo reservas `pending`): Server Action `payDepositAction` llama `POST /api/payments/checkout` con el token de la cookie y redirige al `init_point` de Mercado Pago. Errores del backend (503 sin credenciales, 409 estado inválido) se muestran inline bajo el botón (`useActionState`).
 - Páginas de retorno `/checkout/success|pending|failure` (matchean las `back_urls` que arma el backend): ruta dinámica única `/checkout/[result]` con dict de contenidos, 404 para valores desconocidos.
