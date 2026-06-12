@@ -13,7 +13,7 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: "Wedding Marketplace",
-  description: "Salones, catering y servicios para tu boda, con reserva y seña online",
+  description: "Salones, catering y servicios para bodas y todo tipo de eventos, con reserva y seña online",
 };
 
 export default async function RootLayout({
@@ -33,6 +33,9 @@ export default async function RootLayout({
             <div className="flex items-center gap-6 text-sm">
               <Link href="/venues" className="hover:underline">
                 Salones
+              </Link>
+              <Link href="/services" className="hover:underline">
+                Servicios
               </Link>
               {user !== null && (
                 <>

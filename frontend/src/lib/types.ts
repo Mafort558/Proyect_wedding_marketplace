@@ -68,6 +68,11 @@ export interface Service {
   created_at: string;
 }
 
+export interface ServiceList {
+  items: Service[];
+  total: number;
+}
+
 export interface CheckoutResponse {
   payment_id: number;
   booking_id: number;

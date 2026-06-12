@@ -165,6 +165,14 @@ npm run dev
 - Decisión (KISS): todo el data fetching es server-side (Server Components + Actions); no hay fetch desde el cliente ni estado global. Disponibilidad como lista de fechas ocupadas; calendario visual queda para después.
 - Verificado: `npm run build` y lint verdes; smoke e2e con backend real (catálogo SSR muestra venue seedeado, detalle con seña/disponibilidad, vistas autenticadas via cookie, `/bookings` sin sesión → 307 a `/login`).
 
+### 2026-06-12 — Contenido demo + estética + catálogo de servicios
+- **Visión ampliada**: la plataforma sirve para organizar bodas y cualquier tipo de evento (cumpleaños, corporativos), 100% armado por el cliente pieza por pieza. Copy de home y metadata actualizados. Anotado en TODO: paquetes/combos propios de cada salón.
+- **Seed demo**: 6 empresas ficticias (2 de salones, catering, música, fotografía, ambientación), 6 salones y 9 servicios con descripciones realistas y fotos placeholder (`picsum.photos`, estables por seed) — muestra para futuros clientes.
+- **Fotos en el front**: cards del catálogo de salones con foto de portada (componente compartido `CoverPhoto` con fallback), galería en el detalle del salón. `next/image` con `remotePatterns` para picsum.
+- **Catálogo público de servicios** `/services`: nuevo, consume `GET /api/services` con filtro por rubro y paginación. Link "Servicios" en el nav. La reserva de servicios desde el catálogo queda anotada en TODO (el backend ya la soporta).
+- **Home como landing**: hero, pasos (lugar → servicios → reserva online) y CTA para proveedores.
+- Verificado: build + lint verdes; smoke con backend real (home, catálogos con fotos vía optimizador de imágenes, filtro por rubro, detalle con galería).
+
 ### 2026-06-12 — Frontend: panel de proveedor
 - **Backend**: endpoints nuevos `GET /api/providers/me/venues` y `GET /api/providers/me/services` (listar solo lo propio; el catálogo público no filtra por proveedor). +2 tests (39 total).
 - **Registro con rol**: selector cliente/proveedor en `/register`; si es proveedor pide nombre del negocio y rubro (mismos campos que exige el backend).

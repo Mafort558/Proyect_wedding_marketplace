@@ -29,7 +29,9 @@
 - [ ] Calendario visual de disponibilidad (hoy: lista de fechas ocupadas)
 
 ## Más adelante (post-MVP)
-- [ ] Subida de fotos (S3 o similar — hoy `photos` es lista de URLs)
+- [ ] Paquetes/opciones propias de cada salón (ej: salón con catering incluido) — combos por proveedor
+- [ ] Reserva de servicios desde el catálogo público (backend ya soporta `service_id` en bookings; falta UI)
+- [ ] Subida de fotos (S3 o similar — hoy `photos` es lista de URLs; demo usa picsum.photos)
 - [ ] Búsqueda avanzada / filtros (precio, categoría, zona)
 - [ ] Notificaciones email (confirmación reserva)
 - [ ] Reviews/calificaciones de proveedores

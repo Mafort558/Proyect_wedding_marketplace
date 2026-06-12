@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import { BookingForm } from "@/app/venues/[id]/booking-form";
@@ -22,6 +23,21 @@ export default async function VenueDetailPage({ params }: VenueDetailPageProps) 
           {venue.address}, {venue.city} · hasta {venue.capacity} invitados
         </p>
       </div>
+      {venue.photos.length > 0 && (
+        <ul className="grid grid-cols-2 gap-3 md:grid-cols-3">
+          {venue.photos.map((photo) => (
+            <li key={photo}>
+              <Image
+                src={photo}
+                alt={venue.name}
+                width={800}
+                height={600}
+                className="h-48 w-full rounded-lg object-cover"
+              />
+            </li>
+          ))}
+        </ul>
+      )}
       {venue.description !== "" && <p className="max-w-2xl text-zinc-700">{venue.description}</p>}
       <div className="flex gap-8 rounded-lg border border-zinc-200 bg-white p-5">
         <div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CoverPhoto } from "@/app/cover-photo";
 import { apiFetch } from "@/lib/api";
 import type { VenueList } from "@/lib/types";
 
@@ -54,14 +55,17 @@ export default async function VenuesPage({ searchParams }: VenuesPageProps) {
           <li key={venue.id}>
             <Link
               href={`/venues/${venue.id}`}
-              className="block rounded-lg border border-zinc-200 bg-white p-5 hover:border-zinc-400"
+              className="block overflow-hidden rounded-lg border border-zinc-200 bg-white hover:border-zinc-400"
             >
-              <h2 className="text-lg font-medium">{venue.name}</h2>
-              <p className="text-sm text-zinc-600">
-                {venue.city} · hasta {venue.capacity} invitados
-              </p>
-              <p className="mt-2 font-medium">${venue.price}</p>
-              <p className="text-sm text-zinc-500">Seña: ${venue.deposit_amount}</p>
+              <CoverPhoto src={venue.photos[0]} alt={venue.name} />
+              <div className="p-5">
+                <h2 className="text-lg font-medium">{venue.name}</h2>
+                <p className="text-sm text-zinc-600">
+                  {venue.city} · hasta {venue.capacity} invitados
+                </p>
+                <p className="mt-2 font-medium">${venue.price}</p>
+                <p className="text-sm text-zinc-500">Seña: ${venue.deposit_amount}</p>
+              </div>
             </Link>
           </li>
         ))}
