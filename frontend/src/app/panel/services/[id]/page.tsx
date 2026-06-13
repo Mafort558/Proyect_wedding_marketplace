@@ -17,7 +17,7 @@ export default async function EditServicePage({ params }: EditServicePageProps) 
   }
   return (
     <section className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Editar servicio</h1>
+      <h1 className="text-3xl font-semibold text-strong">Editar servicio</h1>
       <ServiceForm service={service} />
     </section>
   );

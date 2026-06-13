@@ -137,3 +137,56 @@ async def test_confirm_cancelled_booking_conflict(client):
     await client.post(f"/api/bookings/{booking['id']}/cancel", headers=auth(token))
     response = await client.post(f"/api/providers/me/bookings/{booking['id']}/confirm", headers=auth(prov))
     assert response.status_code == 409
+
+
+async def test_public_profile_lists_offerings(client):
+    prov = await provider_token(client)
+    venue_id = await create_venue(client, prov)
+    venue = await client.get(f"/api/venues/{venue_id}")
+    provider_id = venue.json()["provider_id"]
+    response = await client.get(f"/api/providers/{provider_id}")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["id"] == provider_id
+    assert body["business_name"] == "Biz"
+    assert [item["id"] for item in body["venues"]] == [venue_id]
+    assert body["rating"] is None
+    assert body["review_count"] == 0
+
+
+async def test_public_profile_not_found(client):
+    response = await client.get("/api/providers/9999")
+    assert response.status_code == 404
+
+
+async def test_update_profile(client):
+    prov = await provider_token(client)
+    payload = {"business_name": "Nuevo Nombre", "description": "Mejor descripción", "phone": "+54 9 341 5550000"}
+    response = await client.patch("/api/providers/me", json=payload, headers=auth(prov))
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["business_name"] == "Nuevo Nombre"
+    assert body["description"] == "Mejor descripción"
+    assert body["phone"] == "+54 9 341 5550000"
+
+
+async def test_dashboard_metrics(client):
+    prov = await provider_token(client)
+    venue_id = await create_venue(client, prov)
+    token = await register_and_login(client, "client@test.com")
+    booking = await create_booking(client, token, venue_id)
+    await client.post(f"/api/providers/me/bookings/{booking['id']}/confirm", headers=auth(prov))
+    response = await client.get("/api/providers/me/dashboard", headers=auth(prov))
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["total_venues"] == 1
+    assert body["total_bookings"] == 1
+    assert body["bookings_by_status"]["confirmed"] == 1
+    assert body["upcoming_events"] == 1
+    assert body["confirmed_revenue"] == "5000.00"
+
+
+async def test_dashboard_requires_provider(client):
+    token = await register_and_login(client, "client@test.com")
+    response = await client.get("/api/providers/me/dashboard", headers=auth(token))
+    assert response.status_code == 403

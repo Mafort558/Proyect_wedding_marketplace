@@ -28,6 +28,26 @@ export async function createVenueBookingAction(
   redirect("/bookings");
 }
 
+export async function createServiceBookingAction(
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const token = await getSessionToken();
+  if (token === undefined) {
+    redirect("/login");
+  }
+  const payload = {
+    service_id: Number(formData.get("service_id")),
+    event_date: String(formData.get("event_date") ?? ""),
+  };
+  try {
+    await apiFetch<Booking>("/api/bookings", { method: "POST", body: payload, token });
+  } catch (error) {
+    return { error: toErrorMessage(error) };
+  }
+  redirect("/bookings");
+}
+
 export async function cancelBookingAction(bookingId: number): Promise<void> {
   const token = await getSessionToken();
   if (token === undefined) {

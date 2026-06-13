@@ -1,4 +1,5 @@
-from typing import Annotated
+from decimal import Decimal
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Query, status
 
@@ -14,10 +15,14 @@ router = APIRouter(prefix="/services", tags=["services"])
 async def list_services(
     service: Annotated[ServiceCatalogService, Depends(get_service_catalog_service)],
     category: ProviderCategory | None = None,
+    q: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
+    min_price: Annotated[Decimal | None, Query(ge=0)] = None,
+    max_price: Annotated[Decimal | None, Query(ge=0)] = None,
+    sort: Literal["price_asc", "price_desc", "recent"] | None = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> ServiceListResponse:
-    return await service.list_services(category, limit, offset)
+    return await service.list_services(category, q, min_price, max_price, sort, limit, offset)
 
 
 @router.get("/{service_id}", response_model=ServiceResponse)

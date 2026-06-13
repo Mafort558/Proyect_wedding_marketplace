@@ -7,7 +7,7 @@ import { INITIAL_ACTION_STATE } from "@/lib/actions/shared";
 import { CATEGORY_LABELS } from "@/lib/labels";
 import type { Service } from "@/lib/types";
 
-const INPUT_CLASS = "rounded border border-zinc-300 px-3 py-1.5";
+const INPUT_CLASS = "field rounded-lg border border-border px-3 py-1.5";
 
 interface ServiceFormProps {
   service: Service | null;
@@ -19,12 +19,12 @@ export function ServiceForm({ service }: ServiceFormProps) {
     INITIAL_ACTION_STATE,
   );
   return (
-    <form action={formAction} className="flex max-w-lg flex-col gap-4 rounded-lg border border-zinc-200 bg-white p-5">
-      <label className="flex flex-col gap-1 text-sm">
+    <form action={formAction} className="flex max-w-lg animate-fade-up flex-col gap-4 rounded-2xl border border-border bg-surface p-6 shadow-sm">
+      <label className="flex flex-col gap-1 text-sm text-body">
         Nombre
         <input type="text" name="name" required defaultValue={service?.name} className={INPUT_CLASS} />
       </label>
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-sm text-body">
         Categoría
         <select name="category" required defaultValue={service?.category} className={INPUT_CLASS}>
           {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
@@ -34,11 +34,11 @@ export function ServiceForm({ service }: ServiceFormProps) {
           ))}
         </select>
       </label>
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-sm text-body">
         Descripción
         <textarea name="description" rows={3} defaultValue={service?.description} className={INPUT_CLASS} />
       </label>
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-sm text-body">
         Precio
         <input
           type="number"
@@ -50,11 +50,11 @@ export function ServiceForm({ service }: ServiceFormProps) {
           className={INPUT_CLASS}
         />
       </label>
-      {state.error !== null && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error !== null && <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>}
       <button
         type="submit"
         disabled={isPending}
-        className="w-fit rounded bg-zinc-900 px-5 py-2 text-white hover:bg-zinc-700 disabled:opacity-50"
+        className="tappable w-fit rounded-lg bg-accent px-5 py-2 font-medium text-white hover:bg-accent-strong disabled:opacity-50"
       >
         Guardar
       </button>

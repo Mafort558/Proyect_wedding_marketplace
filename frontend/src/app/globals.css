@@ -1,26 +1,254 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf6f3;
+  --foreground: #2b2429;
+  --surface: #ffffff;
+  --border: #e8ded7;
+  --strong: #241d22;
+  --body: #4a4147;
+  --muted: #8a7f86;
+  --accent: #b14256;
+  --accent-strong: #8c2f43;
+  --gold: #c69a5a;
+}
+
+.dark {
+  --background: #151013;
+  --foreground: #efe7ea;
+  --surface: #201920;
+  --border: #382c35;
+  --strong: #f6eef2;
+  --body: #d7cbd2;
+  --muted: #a99ca4;
+  --accent: #d4647a;
+  --accent-strong: #c14d64;
+  --gold: #d6ad6e;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-strong: var(--strong);
+  --color-body: var(--body);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-gold: var(--gold);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), Georgia, "Times New Roman", serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--accent-strong);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--accent) 35%, var(--border));
+  border: 3px solid var(--background);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(28px, -36px) scale(1.12); }
+  66% { transform: translate(-24px, 22px) scale(0.92); }
+}
+@keyframes shimmer {
+  100% { transform: translateX(220%); }
+}
+@keyframes gradient-pan {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes spin-in {
+  from { transform: rotate(-90deg) scale(0.6); opacity: 0; }
+  to { transform: rotate(0) scale(1); opacity: 1; }
+}
+@keyframes ken-burns {
+  from { transform: scale(1.05) translate(0, 0); }
+  to { transform: scale(1.18) translate(-2%, -2%); }
+}
+@keyframes skeleton-pan {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.animate-fade-in {
+  animation: fade-in 0.9s ease-out both;
+}
+.animate-float {
+  animation: float 7s ease-in-out infinite;
+}
+.animate-blob {
+  animation: blob 20s ease-in-out infinite;
+  filter: blur(40px);
+}
+
+.gradient-text {
+  background-image: linear-gradient(110deg, var(--accent-strong), var(--accent) 45%, var(--gold));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-pan 6s ease infinite;
+}
+
+.shimmer-btn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.shimmer-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-220%) skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  width: 60%;
+}
+.shimmer-btn:hover::after {
+  animation: shimmer 0.9s ease;
+}
+
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  height: 2px;
+  width: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.card-rise {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+}
+.card-rise:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 50px -22px color-mix(in srgb, var(--accent) 45%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.tappable {
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.tappable:active {
+  transform: scale(0.96);
+}
+
+.field {
+  background: var(--surface);
+  color: var(--foreground);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.field::placeholder {
+  color: color-mix(in srgb, var(--muted) 80%, transparent);
+}
+.field:hover {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+}
+.field:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.theme-toggle-icon {
+  animation: spin-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ken-burns {
+  animation: ken-burns 22s ease-in-out infinite alternate;
+}
+
+.skeleton {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--border) 60%, transparent) 25%,
+    color-mix(in srgb, var(--muted) 22%, var(--surface)) 37%,
+    color-mix(in srgb, var(--border) 60%, transparent) 63%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-pan 1.4s ease-in-out infinite;
+}
+
+.reveal {
+  opacity: 0;
+}
+.reveal.is-visible {
+  animation: fade-up 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

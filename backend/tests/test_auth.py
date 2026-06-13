@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 import jwt
 
-from tests.helpers import auth, login, register, register_and_login
+from tests.helpers import DEFAULT_PASSWORD, auth, login, register, register_and_login
 
 
 async def test_register_ok(client):
@@ -63,4 +63,29 @@ async def test_me_with_expired_token(client):
 
 async def test_me_without_token(client):
     response = await client.get("/api/auth/me")
+    assert response.status_code == 401
+
+
+async def test_change_password(client):
+    token = await register_and_login(client, "pwd@test.com")
+    payload = {"current_password": DEFAULT_PASSWORD, "new_password": "newpassword456"}
+    response = await client.post("/api/auth/change-password", json=payload, headers=auth(token))
+    assert response.status_code == 204
+    old = await client.post("/api/auth/login", json={"email": "pwd@test.com", "password": DEFAULT_PASSWORD})
+    assert old.status_code == 401
+    new = await client.post("/api/auth/login", json={"email": "pwd@test.com", "password": "newpassword456"})
+    assert new.status_code == 200
+
+
+async def test_change_password_wrong_current(client):
+    token = await register_and_login(client, "pwd2@test.com")
+    payload = {"current_password": "incorrect", "new_password": "newpassword456"}
+    response = await client.post("/api/auth/change-password", json=payload, headers=auth(token))
+    assert response.status_code == 400
+
+
+async def test_change_password_requires_auth(client):
+    response = await client.post(
+        "/api/auth/change-password", json={"current_password": "x", "new_password": "newpassword456"}
+    )
     assert response.status_code == 401

@@ -21,17 +21,19 @@ from app.db.session import get_db_session
 from app.integrations.mercadopago_client import MercadoPagoClient
 from app.main import create_app
 
-MIGRATION_PATH = Path(__file__).parent.parent / "migrations" / "001_initial_schema.sql"
-ALL_TABLES = "payments, bookings, services, venues, providers, users"
+MIGRATIONS_DIR = Path(__file__).parent.parent / "migrations"
+MIGRATION_PATHS = sorted(MIGRATIONS_DIR.glob("*.sql"))
+ALL_TABLES = "messages, notifications, favorites, reviews, payments, bookings, packages, services, venues, providers, users"
 
 
 @pytest.fixture
 async def engine():
     engine = create_async_engine(TEST_DATABASE_URL)
     async with engine.begin() as conn:
-        for statement in MIGRATION_PATH.read_text().split(";"):
-            if statement.strip():
-                await conn.exec_driver_sql(statement)
+        for migration_path in MIGRATION_PATHS:
+            for statement in migration_path.read_text().split(";"):
+                if statement.strip():
+                    await conn.exec_driver_sql(statement)
         await conn.exec_driver_sql(f"TRUNCATE {ALL_TABLES} RESTART IDENTITY CASCADE")
     yield engine
     await engine.dispose()

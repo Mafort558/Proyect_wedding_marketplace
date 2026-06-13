@@ -4,7 +4,12 @@ from fastapi import APIRouter, Depends
 
 from app.api.dependencies import CurrentProvider, get_provider_service
 from app.schemas.booking import BookingResponse
-from app.schemas.provider import ProviderResponse
+from app.schemas.provider import (
+    ProviderDashboardResponse,
+    ProviderPublicResponse,
+    ProviderResponse,
+    ProviderUpdateRequest,
+)
 from app.schemas.service import ServiceResponse
 from app.schemas.venue import VenueResponse
 from app.services.provider_service import ProviderService
@@ -18,6 +23,23 @@ async def get_my_profile(
     service: Annotated[ProviderService, Depends(get_provider_service)],
 ) -> ProviderResponse:
     return service.get_profile(provider)
+
+
+@router.patch("/me", response_model=ProviderResponse)
+async def update_my_profile(
+    request: ProviderUpdateRequest,
+    provider: CurrentProvider,
+    service: Annotated[ProviderService, Depends(get_provider_service)],
+) -> ProviderResponse:
+    return await service.update_profile(provider, request)
+
+
+@router.get("/me/dashboard", response_model=ProviderDashboardResponse)
+async def get_dashboard(
+    provider: CurrentProvider,
+    service: Annotated[ProviderService, Depends(get_provider_service)],
+) -> ProviderDashboardResponse:
+    return await service.get_dashboard(provider)
 
 
 @router.get("/me/venues", response_model=list[VenueResponse])
@@ -60,3 +82,11 @@ async def reject_booking(
     service: Annotated[ProviderService, Depends(get_provider_service)],
 ) -> BookingResponse:
     return await service.reject_booking(provider, booking_id)
+
+
+@router.get("/{provider_id}", response_model=ProviderPublicResponse)
+async def get_public_profile(
+    provider_id: int,
+    service: Annotated[ProviderService, Depends(get_provider_service)],
+) -> ProviderPublicResponse:
+    return await service.get_public_profile(provider_id)

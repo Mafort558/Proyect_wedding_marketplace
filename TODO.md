@@ -26,7 +26,7 @@
 - [x] Mis reservas: listado + crear desde detalle + cancelar
 - [x] Checkout de reserva con seña (MP) — botón pagar seña → init_point + páginas /checkout/success|pending|failure (falta probar con credenciales MP reales)
 - [x] Panel de proveedor (UI) — registro con rol provider, `/panel` (reservas recibidas confirmar/rechazar), CRUD salones y servicios
-- [ ] Calendario visual de disponibilidad (hoy: lista de fechas ocupadas)
+- [x] Calendario visual de disponibilidad (grilla mensual en el detalle del salón: ocupadas en rojo, pasadas deshabilitadas, click selecciona fecha para reservar)
 
 ## Más adelante (post-MVP)
 - [ ] Paquetes/opciones propias de cada salón (ej: salón con catering incluido) — combos por proveedor

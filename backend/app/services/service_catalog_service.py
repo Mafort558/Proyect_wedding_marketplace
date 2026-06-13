@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
@@ -10,8 +12,19 @@ class ServiceCatalogService:
     def __init__(self, repository: ServiceRepository):
         self._repository = repository
 
-    async def list_services(self, category: str | None, limit: int, offset: int) -> ServiceListResponse:
-        services, total = await self._repository.list_services(category, limit, offset)
+    async def list_services(
+        self,
+        category: str | None,
+        query_text: str | None,
+        min_price: Decimal | None,
+        max_price: Decimal | None,
+        sort: str | None,
+        limit: int,
+        offset: int,
+    ) -> ServiceListResponse:
+        services, total = await self._repository.list_services(
+            category, query_text, min_price, max_price, sort, limit, offset
+        )
         items = [ServiceResponse.model_validate(service) for service in services]
         return ServiceListResponse(items=items, total=total)
 
