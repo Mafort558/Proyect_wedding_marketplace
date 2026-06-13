@@ -196,3 +196,19 @@ npm run dev
 - Nuevo componente cliente `AvailabilityCalendar` (detalle del salón): grilla mensual con navegación de meses (no permite ir antes del mes actual), fechas ocupadas en rojo, pasadas deshabilitadas, leyenda de colores.
 - Integrado en `BookingForm`: reemplaza el `<input type="date">` y la lista plana de fechas ocupadas — se elige la fecha clickeando el día (input hidden + botón deshabilitado hasta seleccionar). Sin sesión se muestra el calendario en modo solo lectura con link a login.
 - Verificado: typecheck + lint verdes.
+
+### 2026-06-13 — Fase 9: dashboard de proveedor + ajustes de cuenta
+- **Backend**: `GET /api/providers/me/dashboard` (métricas agregadas en Python sobre lo propio: totales de salones/servicios/reservas, reservas por estado, ingresos confirmados sumando `deposit_paid`+`confirmed`, próximos eventos `event_date >= hoy` y no cancelados, rating + reseñas). `PATCH /api/providers/me` (editar nombre/descripción/teléfono). `POST /api/auth/change-password` (verifica password actual, 400 si no coincide). +6 tests.
+- **Frontend**: `/panel` con tarjetas de métricas (grid 2/4) + gráfico de barras CSS de reservas por estado; export CSV de reservas recibidas (`bookings-export.tsx`, client). Nueva `/panel/settings` con `ProfileForm` + `PasswordForm` (`useActionState`, indicador "Guardado"). `success?: boolean` agregado a `ActionState`.
+
+### 2026-06-13 — Fase 10: carrito + paquetes
+- **Backend**: entidad `Package` (migración `006_packages.sql`: name, description, price, `service_ids` JSONB). CRUD `GET /api/packages/mine` (proveedor), `GET /api/packages/{id}` (público), `POST`/`PUT`/`DELETE`. Validación de ownership: los `service_ids` deben ser todos servicios propios (400 si no). Paquetes incluidos en el perfil público del proveedor. +7 tests (69 total).
+- **Frontend**: `/panel/packages` (listado + alta/edición/baja con `PackageForm`, checkboxes de servicios). Sección "Paquetes" en el perfil público del proveedor (resuelve nombres de servicios vía `Map`). Carrito client-side en `localStorage` + evento `cart-change`: `AddToCartButton` (detalle de servicio), `CartLink` (badge en nav), `/cart` (listado + total `Intl.NumberFormat es-AR` + reservar por separado).
+
+### 2026-06-13 — Fase 11: SEO + PWA
+- `getSiteUrl()` (env `SITE_URL`) en config. `app/sitemap.ts` (rutas estáticas + detalle de salones/servicios vía API, try/catch si el backend está caído), `app/robots.ts` (disallow de rutas privadas), `app/manifest.ts` (PWA, theme color `#b14256`). `metadataBase` en el layout. JSON-LD (`json-ld.tsx`): `EventVenue` en salones, `Product`+`Offer` en servicios, `LocalBusiness`+`AggregateRating` en proveedores.
+
+### 2026-06-13 — Fase 12: QA de navegación
+- Recorrido de todas las rutas con backend + frontend reales. Públicas 200, detalles OK para IDs válidos, protegidas redirigen a `/login` sin filtrar contenido, archivos SEO sirven (sitemap/robots/manifest).
+- **Hallazgo (resuelto)**: los perfiles de proveedor daban 404 — el proceso de backend estaba viejo (arrancado antes de las Fases 6-10, sin las rutas nuevas). Reiniciado con `--reload`.
+- **Limitación conocida (no se corrige a propósito)**: las páginas con `loading.tsx` (detalle de salón/servicio, panel, reservas) devuelven HTTP `200` ante ID inválido / sin sesión en vez de `404`/`307`, porque el streaming del Suspense de `loading.tsx` ya envió el shell antes de que resuelva `notFound()`/`redirect()`. La navegación igual ocurre client-side (se ve la página 404 / se redirige, sin fuga de datos); `providers/` no tiene `loading.tsx` por eso da 404 duro. Se mantiene `loading.tsx` (skeletons, polish deliberado) por sobre el header de status en este caso borde.

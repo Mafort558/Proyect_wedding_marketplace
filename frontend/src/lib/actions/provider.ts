@@ -1,12 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 import { apiFetch } from "@/lib/api";
 import { getSessionToken } from "@/lib/session";
 import type { ActionState } from "@/lib/actions/shared";
 import { toErrorMessage } from "@/lib/actions/shared";
-import type { Booking, Service, Venue } from "@/lib/types";
+import type { Booking, Package, Provider, Service, Venue } from "@/lib/types";
 
 interface Endpoint {
   path: string;
@@ -99,6 +100,61 @@ export async function deleteServiceAction(
     return { error: toErrorMessage(error) };
   }
   redirect("/panel/services");
+}
+
+export async function updateProfileAction(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  const token = await requireToken();
+  const payload = {
+    business_name: String(formData.get("business_name") ?? ""),
+    description: String(formData.get("description") ?? ""),
+    phone: String(formData.get("phone") ?? ""),
+  };
+  try {
+    await apiFetch<Provider>("/api/providers/me", { method: "PATCH", body: payload, token });
+  } catch (error) {
+    return { error: toErrorMessage(error) };
+  }
+  revalidatePath("/panel");
+  return { error: null, success: true };
+}
+
+export async function savePackageAction(
+  packageId: number | null,
+  _prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const token = await requireToken();
+  const serviceIds = formData.getAll("service_ids").map((value) => Number(value));
+  if (serviceIds.length === 0) {
+    return { error: "Elegí al menos un servicio para el paquete" };
+  }
+  const payload = {
+    name: String(formData.get("name") ?? ""),
+    description: String(formData.get("description") ?? ""),
+    price: String(formData.get("price") ?? ""),
+    service_ids: serviceIds,
+  };
+  const endpoint = saveEndpoint("/api/packages", packageId);
+  try {
+    await apiFetch<Package>(endpoint.path, { method: endpoint.method, body: payload, token });
+  } catch (error) {
+    return { error: toErrorMessage(error) };
+  }
+  redirect("/panel/packages");
+}
+
+export async function deletePackageAction(
+  packageId: number,
+  _prevState: ActionState,
+  _formData: FormData,
+): Promise<ActionState> {
+  const token = await requireToken();
+  try {
+    await apiFetch<void>(`/api/packages/${packageId}`, { method: "DELETE", token });
+  } catch (error) {
+    return { error: toErrorMessage(error) };
+  }
+  redirect("/panel/packages");
 }
 
 export async function confirmBookingAction(bookingId: number): Promise<void> {

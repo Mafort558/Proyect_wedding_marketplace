@@ -2,10 +2,16 @@ from datetime import date, timedelta
 
 from fastapi import HTTPException, status
 
-from app.core.constants import DEFAULT_AVAILABILITY_WINDOW_DAYS
+from app.core.constants import (
+    DEFAULT_AVAILABILITY_WINDOW_DAYS,
+    NOTIFICATION_BOOKING_RECEIVED,
+    NOTIFICATION_PANEL_LINK,
+)
 from app.models.entities import User
 from app.models.enums import BookingStatus
 from app.repositories.booking_repository import BookingRepository
+from app.repositories.notification_repository import NotificationRepository
+from app.repositories.provider_repository import ProviderRepository
 from app.repositories.service_repository import ServiceRepository
 from app.repositories.venue_repository import VenueRepository
 from app.schemas.booking import BookingCreateRequest, BookingResponse, VenueAvailabilityResponse
@@ -17,10 +23,14 @@ class BookingService:
         booking_repository: BookingRepository,
         venue_repository: VenueRepository,
         service_repository: ServiceRepository,
+        provider_repository: ProviderRepository,
+        notification_repository: NotificationRepository,
     ):
         self._booking_repository = booking_repository
         self._venue_repository = venue_repository
         self._service_repository = service_repository
+        self._provider_repository = provider_repository
+        self._notifications = notification_repository
 
     async def create_booking(self, current_user: User, request: BookingCreateRequest) -> BookingResponse:
         if request.event_date <= date.today():
@@ -43,6 +53,7 @@ class BookingService:
             event_date=request.event_date,
             total_price=venue.price,
         )
+        await self._notify_provider(venue.provider_id, current_user, venue.name)
         return BookingResponse.model_validate(booking)
 
     async def _create_service_booking(self, current_user: User, request: BookingCreateRequest) -> BookingResponse:
@@ -56,7 +67,20 @@ class BookingService:
             event_date=request.event_date,
             total_price=service.price,
         )
+        await self._notify_provider(service.provider_id, current_user, service.name)
         return BookingResponse.model_validate(booking)
+
+    async def _notify_provider(self, provider_id: int, client: User, offering_name: str) -> None:
+        provider = await self._provider_repository.get_by_id(provider_id)
+        if provider is None:
+            return
+        await self._notifications.create(
+            user_id=provider.user_id,
+            type=NOTIFICATION_BOOKING_RECEIVED,
+            title="Nueva reserva recibida",
+            body=f"{client.full_name} reservó {offering_name}",
+            link=NOTIFICATION_PANEL_LINK,
+        )
 
     async def list_my_bookings(self, current_user: User) -> list[BookingResponse]:
         bookings = await self._booking_repository.list_by_user(current_user.id)

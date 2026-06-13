@@ -22,3 +22,9 @@ class UserRepository:
         await self._session.commit()
         await self._session.refresh(user)
         return user
+
+    async def update_password(self, user: User, password_hash: str) -> User:
+        user.password_hash = password_hash
+        await self._session.commit()
+        await self._session.refresh(user)
+        return user

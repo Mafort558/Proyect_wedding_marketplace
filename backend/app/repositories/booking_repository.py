@@ -46,6 +46,21 @@ class BookingRepository:
         result = await self._session.execute(query)
         return list(result.scalars().all())
 
+    async def user_has_booking_for_target(
+        self,
+        user_id: int,
+        venue_id: int | None,
+        service_id: int | None,
+        statuses: tuple[BookingStatus, ...],
+    ) -> bool:
+        query = select(Booking.id).where(Booking.user_id == user_id, Booking.status.in_(statuses))
+        if venue_id is not None:
+            query = query.where(Booking.venue_id == venue_id)
+        if service_id is not None:
+            query = query.where(Booking.service_id == service_id)
+        result = await self._session.execute(query)
+        return result.first() is not None
+
     async def venue_has_blocking_booking(self, venue_id: int, event_date: date) -> bool:
         query = select(Booking.id).where(
             Booking.venue_id == venue_id,

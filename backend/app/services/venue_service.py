@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from fastapi import HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
@@ -10,8 +12,20 @@ class VenueService:
     def __init__(self, repository: VenueRepository):
         self._repository = repository
 
-    async def list_venues(self, city: str | None, min_capacity: int | None, limit: int, offset: int) -> VenueListResponse:
-        venues, total = await self._repository.list_venues(city, min_capacity, limit, offset)
+    async def list_venues(
+        self,
+        city: str | None,
+        min_capacity: int | None,
+        query_text: str | None,
+        min_price: Decimal | None,
+        max_price: Decimal | None,
+        sort: str | None,
+        limit: int,
+        offset: int,
+    ) -> VenueListResponse:
+        venues, total = await self._repository.list_venues(
+            city, min_capacity, query_text, min_price, max_price, sort, limit, offset
+        )
         items = [VenueResponse.model_validate(venue) for venue in venues]
         return VenueListResponse(items=items, total=total)
 

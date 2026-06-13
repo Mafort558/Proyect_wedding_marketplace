@@ -54,47 +54,52 @@ export function AvailabilityCalendar({ bookedDates, selectedDate = null, onSelec
     setMonthIndex(monthIndex + 1);
   }
 
+  const base = "tappable relative flex aspect-square items-center justify-center rounded-xl text-sm transition-colors";
+
   function dayClassName(isoDate: string, isDisabled: boolean) {
     if (isoDate === selectedDate) {
-      return "rounded bg-zinc-900 py-1.5 text-white";
+      return `${base} bg-accent font-semibold text-white shadow-md shadow-accent/30`;
     }
     if (booked.has(isoDate)) {
-      return "rounded bg-red-100 py-1.5 text-red-700 line-through";
+      return `${base} bg-red-100 text-red-700 line-through dark:bg-red-500/15 dark:text-red-400`;
+    }
+    if (isoDate === today) {
+      return `${base} text-body ring-1 ring-inset ring-accent/40`;
     }
     if (isDisabled) {
-      return "rounded py-1.5 text-zinc-300";
+      return `${base} text-muted/40`;
     }
     if (onSelect === undefined) {
-      return "rounded py-1.5 text-zinc-700";
+      return `${base} text-body`;
     }
-    return "rounded py-1.5 text-zinc-700 hover:bg-zinc-100";
+    return `${base} text-body hover:bg-accent/10 hover:text-accent`;
   }
 
   return (
-    <div className="w-full max-w-sm rounded-lg border border-zinc-200 p-4">
+    <div className="w-full max-w-sm rounded-2xl border border-border bg-surface p-5">
       <div className="mb-3 flex items-center justify-between">
         <button
           type="button"
           onClick={goToPreviousMonth}
           disabled={isCurrentMonth}
           aria-label="Mes anterior"
-          className="rounded px-2 py-1 text-zinc-600 hover:bg-zinc-100 disabled:opacity-30"
+          className="tappable rounded-lg px-2 py-1 text-body hover:bg-foreground/5 disabled:opacity-30"
         >
           ←
         </button>
-        <p className="text-sm font-medium">
+        <p className="text-sm font-medium text-strong">
           {MONTH_LABELS[monthIndex]} {year}
         </p>
         <button
           type="button"
           onClick={goToNextMonth}
           aria-label="Mes siguiente"
-          className="rounded px-2 py-1 text-zinc-600 hover:bg-zinc-100"
+          className="tappable rounded-lg px-2 py-1 text-body hover:bg-foreground/5"
         >
           →
         </button>
       </div>
-      <div className="grid grid-cols-7 gap-1 text-center text-xs text-zinc-500">
+      <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted">
         {WEEKDAY_LABELS.map((label) => (
           <span key={label} className="py-1">
             {label}
@@ -108,6 +113,7 @@ export function AvailabilityCalendar({ bookedDates, selectedDate = null, onSelec
         {Array.from({ length: daysInMonth }, (_, index) => {
           const isoDate = toIsoDate(year, monthIndex, index + 1);
           const isDisabled = isoDate < today || booked.has(isoDate) || onSelect === undefined;
+          const isSelectable = !isDisabled && isoDate !== selectedDate;
           return (
             <button
               key={isoDate}
@@ -117,17 +123,25 @@ export function AvailabilityCalendar({ bookedDates, selectedDate = null, onSelec
               className={dayClassName(isoDate, isDisabled)}
             >
               {index + 1}
+              {isSelectable && (
+                <span className="absolute bottom-1.5 h-1 w-1 rounded-full bg-emerald-500" />
+              )}
             </button>
           );
         })}
       </div>
-      <div className="mt-3 flex gap-4 text-xs text-zinc-500">
-        <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded bg-red-100" /> Ocupada
+      <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted">
+        {onSelect !== undefined && (
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" /> Libre
+          </span>
+        )}
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded bg-red-100 dark:bg-red-500/20" /> Ocupada
         </span>
         {onSelect !== undefined && (
-          <span className="flex items-center gap-1">
-            <span className="inline-block h-3 w-3 rounded bg-zinc-900" /> Seleccionada
+          <span className="flex items-center gap-1.5">
+            <span className="inline-block h-3 w-3 rounded bg-accent" /> Elegida
           </span>
         )}
       </div>

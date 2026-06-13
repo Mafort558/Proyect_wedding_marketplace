@@ -1,5 +1,6 @@
 from datetime import date
-from typing import Annotated
+from decimal import Decimal
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Query, status
 
@@ -17,10 +18,14 @@ async def list_venues(
     service: Annotated[VenueService, Depends(get_venue_service)],
     city: str | None = None,
     min_capacity: Annotated[int | None, Query(ge=1)] = None,
+    q: Annotated[str | None, Query(min_length=1, max_length=100)] = None,
+    min_price: Annotated[Decimal | None, Query(ge=0)] = None,
+    max_price: Annotated[Decimal | None, Query(ge=0)] = None,
+    sort: Literal["price_asc", "price_desc", "capacity_desc", "recent"] | None = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> VenueListResponse:
-    return await service.list_venues(city, min_capacity, limit, offset)
+    return await service.list_venues(city, min_capacity, q, min_price, max_price, sort, limit, offset)
 
 
 @router.get("/{venue_id}", response_model=VenueResponse)

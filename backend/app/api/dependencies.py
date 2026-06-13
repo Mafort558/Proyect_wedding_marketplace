@@ -13,14 +13,24 @@ from app.models.entities import Provider, User
 from app.models.enums import UserRole
 from app.repositories.booking_repository import BookingRepository
 from app.repositories.payment_repository import PaymentRepository
+from app.repositories.favorite_repository import FavoriteRepository
+from app.repositories.message_repository import MessageRepository
+from app.repositories.notification_repository import NotificationRepository
+from app.repositories.package_repository import PackageRepository
 from app.repositories.provider_repository import ProviderRepository
+from app.repositories.review_repository import ReviewRepository
 from app.repositories.service_repository import ServiceRepository
 from app.repositories.user_repository import UserRepository
 from app.repositories.venue_repository import VenueRepository
 from app.services.auth_service import AuthService
 from app.services.booking_service import BookingService
 from app.services.payment_service import PaymentService
+from app.services.favorite_service import FavoriteService
+from app.services.message_service import MessageService
+from app.services.notification_service import NotificationService
+from app.services.package_service import PackageService
 from app.services.provider_service import ProviderService
+from app.services.review_service import ReviewService
 from app.services.service_catalog_service import ServiceCatalogService
 from app.services.venue_service import VenueService
 
@@ -38,15 +48,53 @@ def get_auth_service(session: DbSession) -> AuthService:
 
 
 def get_booking_service(session: DbSession) -> BookingService:
-    return BookingService(BookingRepository(session), VenueRepository(session), ServiceRepository(session))
+    return BookingService(
+        BookingRepository(session),
+        VenueRepository(session),
+        ServiceRepository(session),
+        ProviderRepository(session),
+        NotificationRepository(session),
+    )
 
 
 def get_service_catalog_service(session: DbSession) -> ServiceCatalogService:
     return ServiceCatalogService(ServiceRepository(session))
 
 
+def get_review_service(session: DbSession) -> ReviewService:
+    return ReviewService(ReviewRepository(session), BookingRepository(session))
+
+
+def get_favorite_service(session: DbSession) -> FavoriteService:
+    return FavoriteService(FavoriteRepository(session))
+
+
 def get_provider_service(session: DbSession) -> ProviderService:
-    return ProviderService(BookingRepository(session), VenueRepository(session), ServiceRepository(session))
+    return ProviderService(
+        BookingRepository(session),
+        VenueRepository(session),
+        ServiceRepository(session),
+        ProviderRepository(session),
+        ReviewRepository(session),
+        NotificationRepository(session),
+        PackageRepository(session),
+    )
+
+
+def get_package_service(session: DbSession) -> PackageService:
+    return PackageService(PackageRepository(session), ServiceRepository(session))
+
+
+def get_notification_service(session: DbSession) -> NotificationService:
+    return NotificationService(NotificationRepository(session))
+
+
+def get_message_service(session: DbSession) -> MessageService:
+    return MessageService(
+        MessageRepository(session),
+        UserRepository(session),
+        NotificationRepository(session),
+    )
 
 
 def get_payment_service(session: DbSession) -> PaymentService:

@@ -16,11 +16,11 @@ export function DeleteButton({ action }: DeleteButtonProps) {
       <button
         type="submit"
         disabled={isPending}
-        className="rounded border border-red-300 px-4 py-1.5 text-sm text-red-700 hover:bg-red-50 disabled:opacity-50"
+        className="tappable rounded-lg border border-red-300 px-4 py-1.5 text-sm text-red-700 hover:bg-red-50 disabled:opacity-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-500/10"
       >
         Eliminar
       </button>
-      {state.error !== null && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error !== null && <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>}
     </form>
   );
 }

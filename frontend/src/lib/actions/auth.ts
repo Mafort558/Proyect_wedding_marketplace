@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { apiFetch } from "@/lib/api";
-import { clearSessionToken, setSessionToken } from "@/lib/session";
+import { clearSessionToken, getSessionToken, setSessionToken } from "@/lib/session";
 import type { ActionState } from "@/lib/actions/shared";
 import { toErrorMessage } from "@/lib/actions/shared";
 import type { TokenResponse, User } from "@/lib/types";
@@ -47,6 +47,23 @@ function buildRegisterPayload(formData: FormData): Record<string, string> {
     business_name: String(formData.get("business_name") ?? ""),
     category: String(formData.get("category") ?? ""),
   };
+}
+
+export async function changePasswordAction(_prevState: ActionState, formData: FormData): Promise<ActionState> {
+  const token = await getSessionToken();
+  if (token === undefined) {
+    redirect("/login");
+  }
+  const payload = {
+    current_password: String(formData.get("current_password") ?? ""),
+    new_password: String(formData.get("new_password") ?? ""),
+  };
+  try {
+    await apiFetch<void>("/api/auth/change-password", { method: "POST", body: payload, token });
+  } catch (error) {
+    return { error: toErrorMessage(error) };
+  }
+  return { error: null, success: true };
 }
 
 export async function logoutAction(): Promise<void> {

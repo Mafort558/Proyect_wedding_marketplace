@@ -17,7 +17,7 @@ export function PayDepositButton({ bookingId }: PayDepositButtonProps) {
       <button
         type="submit"
         disabled={isPending}
-        className="rounded bg-emerald-700 px-4 py-1.5 text-sm text-white hover:bg-emerald-600 disabled:opacity-50"
+        className="shimmer-btn rounded-lg bg-emerald-700 px-4 py-1.5 text-sm font-medium text-white shadow-sm transition-all hover:-translate-y-0.5 hover:bg-emerald-600 disabled:opacity-50"
       >
         Pagar seña
       </button>
