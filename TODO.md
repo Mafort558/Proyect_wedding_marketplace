@@ -28,6 +28,19 @@
 - [x] Panel de proveedor (UI) — registro con rol provider, `/panel` (reservas recibidas confirmar/rechazar), CRUD salones y servicios
 - [x] Calendario visual de disponibilidad (grilla mensual en el detalle del salón: ocupadas en rojo, pasadas deshabilitadas, click selecciona fecha para reservar)
 
+## Hardening pre-deploy (seguridad — antes de lanzar a prod)
+- [ ] Backend detrás de reverse proxy (nginx/Caddy) + HTTPS/TLS; cerrar 8000 al exterior (firewall), solo el proxy habla con uvicorn
+- [ ] Todo en HTTPS: `SITE_URL`/`BACKEND_BASE_URL`/`FRONTEND_BASE_URL` con `https://`
+- [ ] CORS: `CORS_ORIGINS` solo el dominio real (hoy `localhost:3000`), nunca `*`
+- [ ] Secrets: `.env` fuera de git; rotar `JWT_SECRET` (random fuerte) y usar `MP_ACCESS_TOKEN` prod (`APP_USR-`)
+- [ ] DB: usuario dedicado sin superuser + password fuerte + TLS (hoy `dba` peer-auth local)
+- [ ] Cookie de sesión: agregar `Secure` + `SameSite=Lax/Strict` en prod (solo HTTPS) — hoy solo httpOnly
+- [ ] Rate limiting en `/api/auth/login` y `/register` (anti brute-force) — NO existe hoy
+- [ ] Webhook MP: validar firma `x-signature` (hoy solo re-fetch del payment; sumar firma cierra spoofing)
+- [ ] Security headers (CSP, HSTS, X-Frame-Options) vía Next config / proxy
+- [ ] Validar/limitar uploads cuando se sumen fotos (hoy `photos` son URLs)
+- [ ] Logs sin secrets ni tokens
+
 ## Más adelante (post-MVP)
 - [ ] Paquetes/opciones propias de cada salón (ej: salón con catering incluido) — combos por proveedor
 - [ ] Reserva de servicios desde el catálogo público (backend ya soporta `service_id` en bookings; falta UI)
